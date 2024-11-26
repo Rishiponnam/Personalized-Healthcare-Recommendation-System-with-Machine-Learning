@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Health Care Center</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+  </head>
+
+  <style>
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            color: black;
+            margin-top: 0;
+            margin-left: 2px;
+        }
+
+        .myimg {
+            width: 50px;
+            height: 50px;
+            border: 2px solid black;
+            border-radius: 25px;
+        }
+
+    </style>
+</head>
+<body>
+    
+<h1 class="mt-4 my-4 text-center text-green">Health Care Center</h1>
+    <div class="container my-4 mt-4" style="background: black; color: white; border-radius: 15px; padding: 40px;">
+        <form action="/predict" method="post">
+            <div class="form-group">
+                <label for="symptoms">Select symptoms form</label>
+                <!-- Button to open the modal -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#symptomsModal">
+                    List of Symptoms
+                </button>
+            </div>
+            <br><br>
+
+            <!-- Display the selected symptoms -->
+            <input type="text" id="symptoms" name="symptoms" class="form-control" placeholder="Displaying selected symptoms" readonly>
+
+            <br><br>
+            <div name="mysysms" id="transcription"></div>
+
+            {% if message %}
+            <p>{{ message }}</p>
+            {% endif %}
+            <br>
+
+            <button type="submit" class="btn btn-danger btn-lg" style="width: 100%; padding: 14px; margin-bottom: 5px;">Predict</button>
+        </form>
+    </div>
+
+{% if predicted_disease %}
+
+<!-- Results -->
+<h1 class="text-center my-4 mt-4">Our AI System Results</h1>
+<div class="container">
+
+    <div class="result-container">
+        <!-- Buttons to toggle display -->
+        <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#diseaseModal" style="padding:4px;  margin: 5px 40px 5px 0; font-size:20px;font-weight:bold; width:140px; border-radius:5px; background:#F39334;color:black;">Disease</button>
+        <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#descriptionModal" style="padding:4px; margin: 5px 40px 5px 0; font-size:20px;font-weight:bold; width:140px; border-radius:5px; background:#268AF3 ;color:black;">Description</button>
+        <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#precautionModal" style="padding:4px; margin: 5px 40px 5px 0; font-size:20px;font-weight:bold; width:140px; border-radius:5px; background:#F371F9 ;color:black;">Precaution</button>
+        <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#medicationsModal" style="padding:4px; margin: 5px 40px 5px 0; font-size:20px;font-weight:bold; width:140px;border-radius:5px; background:#F8576F ;color:black;">Medications</button>
+        <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#workoutsModal" style="padding:4px; margin: 5px 40px 5px 0; font-size:20px;font-weight:bold; width:140px; border-radius:5px; background:#99F741 ;color:black;">Workouts</button>
+        <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#dietsModal" style="padding:4px; margin: 5px 40px 5px 0; font-size:20px;font-weight:bold; width:140px; border-radius:5px; background:#E5E23D;color:black;">Diets</button>
+    </div>
+</div>
+
+{% endif %}
+
+<!-- Disease Modal -->
+    <div class="modal fade" id="diseaseModal" tabindex="-1" aria-labelledby="diseaseModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #020606; color:white;"> <!-- Set header background color inline -->
+                    <h5 class="modal-title" id="diseaseModalLabel">Predicted Disease</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" > <!-- Set modal body background color inline -->
+                    <p>{{ predicted_disease }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Description Modal -->
+    <div class="modal fade" id="descriptionModal" tabindex="-1" aria-labelledby="descriptionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #020606; color:white;">
+                    <h5 class="modal-title" id="descriptionModalLabel">Description</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>{{ dis_des }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Precaution Modal -->
+    <div class="modal fade" id="precautionModal" tabindex="-1" aria-labelledby="precautionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #020606; color:white;">
+                    <h5 class="modal-title" id="precautionModalLabel">Precaution</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul>
+                        {% for i in my_precautions %}
+                            <li>{{ i }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <!-- Medications Modal -->
+    <div class="modal fade" id="medicationsModal" tabindex="-1" aria-labelledby="medicationsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #020606; color:white;">
+                    <h5 class="modal-title" id="medicationsModalLabel">Medications</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul>
+                        {% for i in medications %}
+                            <li>{{ i }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Workouts Modal -->
+    <div class="modal fade" id="workoutsModal" tabindex="-1" aria-labelledby="workoutsModalLabel" aria-hidden="true">
+        <div class="modal-dialog" >
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #020606; color:white;">
+                    <h5 class="modal-title" id="workoutsModalLabel">Workouts</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul>
+                        {% for i in workout %}
+                            <li>{{ i }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Diets Modal -->
+    <div class="modal fade" id="dietsModal" tabindex="-1" aria-labelledby="dietsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #020606; color:white;">
+                    <h5 class="modal-title" id="dietsModalLabel">Diets</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul>
+                        {% for i in my_diet %}
+                            <li>{{ i }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="symptomsModal" tabindex="-1" aria-labelledby="symptomsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #020606; color:white;">
+                    <h5 class="modal-title" id="symptomsModalLabel">Select Symptoms</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="symptomList">
+                        <label><input type="checkbox" value="itching"> Itching</label><br>
+                        <label><input type="checkbox" value="skin rash"> Skin Rash</label><br>
+                        <label><input type="checkbox" value="nodal skin eruptions"> Nodal Skin Eruptions</label><br>
+                        <label><input type="checkbox" value="continuous sneezing"> Continuous Sneezing</label><br>
+                        <label><input type="checkbox" value="shivering"> Shivering</label><br>
+                        <label><input type="checkbox" value="chills"> Chills</label><br>
+                        <label><input type="checkbox" value="joint pain"> Joint Pain</label><br>
+                        <label><input type="checkbox" value="stomach pain"> Stomach Pain</label><br>
+                        <label><input type="checkbox" value="acidity"> Acidity</label><br>
+                        <label><input type="checkbox" value="ulcers on tongue"> Ulcers on Tongue</label><br>
+                        <label><input type="checkbox" value="muscle wasting"> Muscle Wasting</label><br>
+                        <label><input type="checkbox" value="vomiting"> Vomiting</label><br>
+                        <label><input type="checkbox" value="burning micturition"> Burning Micturition</label><br>        
+                        <label><input type="checkbox" value="spotting urination"> Spotting Urination</label><br>
+                        <label><input type="checkbox" value="fatigue"> Fatigue</label><br>
+                        <label><input type="checkbox" value="weight gain"> Weight Gain</label><br>
+                        <label><input type="checkbox" value="anxiety"> Anxiety</label><br>
+                        <label><input type="checkbox" value="cold hands and feet"> Cold Hands and Feet</label><br>        
+                        <label><input type="checkbox" value="mood swings"> Mood Swings</label><br>
+                        <label><input type="checkbox" value="weight loss"> Weight Loss</label><br>
+                        <label><input type="checkbox" value="restlessness"> Restlessness</label><br>
+                        <label><input type="checkbox" value="lethargy"> Lethargy</label><br>
+                        <label><input type="checkbox" value="patches in throat"> Patches in Throat</label><br>
+                        <label><input type="checkbox" value="irregular sugar level"> Irregular Sugar Level</label><br>    
+                        <label><input type="checkbox" value="cough"> Cough</label><br>
+                        <label><input type="checkbox" value="high fever"> High Fever</label><br>
+                        <label><input type="checkbox" value="sunken eyes"> Sunken Eyes</label><br>
+                        <label><input type="checkbox" value="breathlessness"> Breathlessness</label><br>
+                        <label><input type="checkbox" value="sweating"> Sweating</label><br>
+                        <label><input type="checkbox" value="dehydration"> Dehydration</label><br>
+                        <label><input type="checkbox" value="indigestion"> Indigestion</label><br>
+                        <label><input type="checkbox" value="headache"> Headache</label><br>
+                        <label><input type="checkbox" value="yellowish skin"> Yellowish Skin</label><br>
+                        <label><input type="checkbox" value="dark urine"> Dark Urine</label><br>
+                        <label><input type="checkbox" value="nausea"> Nausea</label><br>
+                        <label><input type="checkbox" value="loss of appetite"> Loss of Appetite</label><br>
+                        <label><input type="checkbox" value="pain behind the eyes"> Pain Behind the Eyes</label><br>      
+                        <label><input type="checkbox" value="back pain"> Back Pain</label><br>
+                        <label><input type="checkbox" value="constipation"> Constipation</label><br>
+                        <label><input type="checkbox" value="abdominal pain"> Abdominal Pain</label><br>
+                        <label><input type="checkbox" value="diarrhoea"> Diarrhoea</label><br>
+                        <label><input type="checkbox" value="mild fever"> Mild Fever</label><br>
+                        <label><input type="checkbox" value="yellow urine"> Yellow Urine</label><br>
+                        <label><input type="checkbox" value="yellowing of eyes"> Yellowing of Eyes</label><br>
+                        <label><input type="checkbox" value="acute liver failure"> Acute Liver Failure</label><br>        
+                        <label><input type="checkbox" value="fluid overload"> Fluid Overload</label><br>
+                        <label><input type="checkbox" value="swelling of stomach"> Swelling of Stomach</label><br>        
+                        <label><input type="checkbox" value="swelled lymph nodes"> Swelled Lymph Nodes</label><br>        
+                        <label><input type="checkbox" value="malaise"> Malaise</label><br>
+                        <label><input type="checkbox" value="blurred and distorted vision"> Blurred and Distorted Vision</label><br>
+                        <label><input type="checkbox" value="phlegm"> Phlegm</label><br>
+                        <label><input type="checkbox" value="throat irritation"> Throat Irritation</label><br>
+                        <label><input type="checkbox" value="redness of eyes"> Redness of Eyes</label><br>
+                        <label><input type="checkbox" value="sinus pressure"> Sinus Pressure</label><br>
+                        <label><input type="checkbox" value="runny nose"> Runny Nose</label><br>
+                        <label><input type="checkbox" value="congestion"> Congestion</label><br>
+                        <label><input type="checkbox" value="chest pain"> Chest Pain</label><br>
+                        <label><input type="checkbox" value="weakness in limbs"> Weakness in Limbs</label><br>
+                        <label><input type="checkbox" value="fast heart rate"> Fast Heart Rate</label><br>
+                        <label><input type="checkbox" value="pain during bowel movements"> Pain During Bowel Movements</label><br>
+                        <label><input type="checkbox" value="pain in anal region"> Pain in Anal Region</label><br>        
+                        <label><input type="checkbox" value="bloody stool"> Bloody Stool</label><br>
+                        <label><input type="checkbox" value="irritation in anus"> Irritation in Anus</label><br>
+                        <label><input type="checkbox" value="neck pain"> Neck Pain</label><br>
+                        <label><input type="checkbox" value="dizziness"> Dizziness</label><br>
+                        <label><input type="checkbox" value="cramps"> Cramps</label><br>
+                        <label><input type="checkbox" value="bruising"> Bruising</label><br>
+                        <label><input type="checkbox" value="obesity"> Obesity</label><br>
+                        <label><input type="checkbox" value="swollen legs"> Swollen Legs</label><br>
+                        <label><input type="checkbox" value="swollen blood vessels"> Swollen Blood Vessels</label><br>    
+                        <label><input type="checkbox" value="puffy face and eyes"> Puffy Face and Eyes</label><br>        
+                        <label><input type="checkbox" value="enlarged thyroid"> Enlarged Thyroid</label><br>
+                        <label><input type="checkbox" value="brittle nails"> Brittle Nails</label><br>
+                        <label><input type="checkbox" value="swollen extremities"> Swollen Extremities</label><br>        
+                        <label><input type="checkbox" value="excessive hunger"> Excessive Hunger</label><br>
+                        <label><input type="checkbox" value="extra marital contacts"> Extra Marital Contacts</label><br>  
+                        <label><input type="checkbox" value="drying and tingling lips"> Drying and Tingling Lips</label><br>
+                        <label><input type="checkbox" value="slurred speech"> Slurred Speech</label><br>
+                        <label><input type="checkbox" value="knee pain"> Knee Pain</label><br>
+                        <label><input type="checkbox" value="hip joint pain"> Hip Joint Pain</label><br>
+                        <label><input type="checkbox" value="muscle weakness"> Muscle Weakness</label><br>
+                        <label><input type="checkbox" value="stiff neck"> Stiff Neck</label><br>
+                        <label><input type="checkbox" value="swelling joints"> Swelling Joints</label><br>
+                        <label><input type="checkbox" value="movement stiffness"> Movement Stiffness</label><br>
+                        <label><input type="checkbox" value="spinning movements"> Spinning Movements</label><br>
+                        <label><input type="checkbox" value="loss of balance"> Loss of Balance</label><br>
+                        <label><input type="checkbox" value="unsteadiness"> Unsteadiness</label><br>
+                        <label><input type="checkbox" value="weakness of one body side"> Weakness of One Body Side</label><br>
+                        <label><input type="checkbox" value="loss of smell"> Loss of Smell</label><br>
+                        <label><input type="checkbox" value="bladder discomfort"> Bladder Discomfort</label><br>
+                        <label><input type="checkbox" value="foul smell of urine"> Foul Smell of Urine</label><br>        
+                        <label><input type="checkbox" value="continuous feel of urine"> Continuous Feel of Urine</label><br>
+                        <label><input type="checkbox" value="passage of gases"> Passage of Gases</label><br>
+                        <label><input type="checkbox" value="internal itching"> Internal Itching</label><br>
+                        <label><input type="checkbox" value="toxic look (typhos)"> Toxic Look (Typhos)</label><br>        
+                        <label><input type="checkbox" value="depression"> Depression</label><br>
+                        <label><input type="checkbox" value="irritability"> Irritability</label><br>
+                        <label><input type="checkbox" value="muscle pain"> Muscle Pain</label><br>
+                        <label><input type="checkbox" value="altered sensorium"> Altered Sensorium</label><br>
+                        <label><input type="checkbox" value="red spots over body"> Red Spots Over Body</label><br>        
+                        <label><input type="checkbox" value="belly pain"> Belly Pain</label><br>
+                        <label><input type="checkbox" value="abnormal menstruation"> Abnormal Menstruation</label><br>    
+                        <label><input type="checkbox" value="dischromic patches"> Dischromic Patches</label><br>
+                        <label><input type="checkbox" value="watering from eyes"> Watering from Eyes</label><br>
+                        <label><input type="checkbox" value="increased appetite"> Increased Appetite</label><br>
+                        <label><input type="checkbox" value="polyuria"> Polyuria</label><br>
+                        <label><input type="checkbox" value="family history"> Family History</label><br>
+                        <label><input type="checkbox" value="mucoid sputum"> Mucoid Sputum</label><br>
+                        <label><input type="checkbox" value="rusty sputum"> Rusty Sputum</label><br>
+                        <label><input type="checkbox" value="lack of concentration"> Lack of Concentration</label><br>    
+                        <label><input type="checkbox" value="visual disturbances"> Visual Disturbances</label><br>        
+                        <label><input type="checkbox" value="receiving blood transfusion"> Receiving Blood Transfusion</label><br>
+                        <label><input type="checkbox" value="receiving unsterile injections"> Receiving Unsterile Injections</label><br>
+                        <label><input type="checkbox" value="coma"> Coma</label><br>
+                        <label><input type="checkbox" value="stomach bleeding"> Stomach Bleeding</label><br>
+                        <label><input type="checkbox" value="distention of abdomen"> Distention of Abdomen</label><br>    
+                        <label><input type="checkbox" value="history of alcohol consumption"> History of Alcohol Consumption</label><br>
+                        <label><input type="checkbox" value="fluid overload"> Fluid Overload</label><br>
+                        <label><input type="checkbox" value="blood in sputum"> Blood in Sputum</label><br>
+                        <label><input type="checkbox" value="prominent veins on calf"> Prominent Veins on Calf</label><br>
+                        <label><input type="checkbox" value="palpitations"> Palpitations</label><br>
+                        <label><input type="checkbox" value="painful walking"> Painful Walking</label><br>
+                        <label><input type="checkbox" value="pus filled pimples"> Pus Filled Pimples</label><br>
+                        <label><input type="checkbox" value="blackheads"> Blackheads</label><br>
+                        <label><input type="checkbox" value="scurring"> Scurring</label><br>
+                        <label><input type="checkbox" value="skin peeling"> Skin Peeling</label><br>
+                        <label><input type="checkbox" value="silver like dusting"> Silver Like Dusting</label><br>        
+                        <label><input type="checkbox" value="small dents in nails"> Small Dents in Nails</label><br>      
+                        <label><input type="checkbox" value="inflammatory nails"> Inflammatory Nails</label><br>
+                        <label><input type="checkbox" value="blister"> Blister</label><br>
+                        <label><input type="checkbox" value="red sore around nose"> Red Sore Around Nose</label><br>      
+                        <label><input type="checkbox" value="yellow crust ooze"> Yellow Crust Ooze</label><br>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="updateSymptoms()">Save Symptoms</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to update the selected symptoms in the input field
+        function updateSymptoms() {
+            // Get all selected checkboxes
+            var selectedSymptoms = [];
+            var checkboxes = document.querySelectorAll('#symptomList input[type="checkbox"]:checked');
+            checkboxes.forEach(function(checkbox) {
+                selectedSymptoms.push(checkbox.value);
+            });
+
+            // Join selected symptoms with commas and update the input field
+            document.getElementById("symptoms").value = selectedSymptoms.join(", ");
+
+            // Close the modal
+            var modal = bootstrap.Modal.getInstance(document.getElementById('symptomsModal'));
+            modal.hide();
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+</body>
+
+</html>
